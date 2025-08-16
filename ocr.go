@@ -19,6 +19,7 @@ const wechatDir = "path"
 type WechatOCR struct {
 	dll        *syscall.LazyDLL
 	wechat_ocr *syscall.LazyProc
+	stop_ocr   *syscall.LazyProc
 }
 
 // SetResCallback 定义了回调函数的接口
@@ -35,10 +36,15 @@ func NewWechatOCR(dllPath string) (*WechatOCR, error) {
 	if wechat_ocr == nil {
 		return nil, fmt.Errorf("failed to find function 'wechat_ocr' in DLL: %s", dllPath)
 	}
+	stop_ocr := dll.NewProc("stop_ocr")
+	if stop_ocr == nil {
+		return nil, fmt.Errorf("failed to find function 'stop_ocr' in DLL: %s", dllPath)
+	}
 
 	return &WechatOCR{
 		dll:        dll,
 		wechat_ocr: wechat_ocr,
+		stop_ocr:   stop_ocr,
 	}, nil
 }
 

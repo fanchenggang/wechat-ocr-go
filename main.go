@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"syscall"
 )
 
 func main() {
@@ -20,14 +19,7 @@ func main() {
 		fmt.Println(result)
 	}
 
-	defer func() {
-		if wechatOCR.dll != nil {
-			err := syscall.FreeLibrary(syscall.Handle(wechatOCR.dll.Handle()))
-			if err != nil {
-				fmt.Println("Free library error:", err)
-			}
-		}
-	}()
+	wechatOCR.stop_ocr.Call()
 
 	//使用自己电脑上的wechat
 	//ocrExe := "C:\\Users\\Administrator\\AppData\\Roaming\\Tencent\\WeChat\\XPlugin\\Plugins\\WeChatOCR\\7079\\extracted\\WeChatOCR.exe"
