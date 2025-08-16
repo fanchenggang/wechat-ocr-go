@@ -1,5 +1,9 @@
 package main
 
+/*
+#cgo LDFLAGS: -L. -lwcocr
+#include <stdlib.h>
+*/
 import "C"
 import (
 	"encoding/json"
@@ -66,26 +70,20 @@ func (w *WechatOCR) CallWechatOCR(ocrExe, wechatDir, imgFn string, callback SetR
 	}
 	return nil
 }
-func OcrCustom(ocrExe, wechatDir, imgFn string) *Result {
+func OcrCustom(wechatOCR *WechatOCR, ocrExe, wechatDir, imgFn string) *Result {
 	//ocrExe := "C:\\Users\\Administrator\\AppData\\Roaming\\Tencent\\WeChat\\XPlugin\\Plugins\\WeChatOCR\\7079\\extracted\\WeChatOCR.exe"
 	//wechatDir := "D:\\SOFTWARE\\Tencent\\WeChat\\[3.9.11.25]"
-	return ocr(ocrExe, wechatDir, imgFn)
+	return ocr(wechatOCR, ocrExe, wechatDir, imgFn)
 }
-func OcrDefault(imgFn string) *Result {
-	return ocr(ocrExe, wechatDir, imgFn)
+func OcrDefault(wechatOCR *WechatOCR, imgFn string) *Result {
+	return ocr(wechatOCR, ocrExe, wechatDir, imgFn)
 }
-func ocr(ocrExe, wechatDir, imgFn string) *Result {
-
-	wechatOCR, err := NewWechatOCR("wcocr.dll")
-	if err != nil {
-		fmt.Printf("Failed to create WechatOCR instance: %v\n", err)
-		return nil
-	}
+func ocr(wechatOCR *WechatOCR, ocrExe, wechatDir, imgFn string) *Result {
 
 	result := make(chan string, 1)
 	defer close(result)
 
-	err = wechatOCR.CallWechatOCR(ocrExe, wechatDir, imgFn, func(res string) {
+	err := wechatOCR.CallWechatOCR(ocrExe, wechatDir, imgFn, func(res string) {
 		result <- res
 	})
 	if err != nil {
